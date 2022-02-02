@@ -2,14 +2,7 @@ import pandas as pd
 import streamlit as st
 import os.path
 
-# HACK This only works when we've installed streamlit with pipenv, so the
-# permissions during install are the same as the running process
-STREAMLIT_STATIC_PATH = pathlib.Path(st.__path__[0]) / 'static'
-# We create a downloads directory within the streamlit static asset directory
-# and we write output files to it
-DOWNLOADS_PATH = (STREAMLIT_STATIC_PATH / "downloads")
-if not DOWNLOADS_PATH.is_dir():
-    DOWNLOADS_PATH.mkdir()
+
 
 def check_form(qst,ans,units):
 
