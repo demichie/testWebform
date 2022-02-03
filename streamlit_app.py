@@ -37,19 +37,19 @@ def check_form(qst,ans,units):
     
         idx = 2+i*3
     
-        if not ans[idx].isnumeric():
+        if not ans[idx].isdecimal():
         
             st.write('Non numeric answer')
             st.write(qst[idx],ans[idx])
             check_flag = False
             
-        if not ans[idx+1].isnumeric():
+        if not ans[idx+1].isdecimal():
         
             st.write('Non numeric answer')
             st.write(qst[idx+1],ans[idx+1])
             check_flag = False
             
-        if not ans[idx+2].isnumeric():
+        if not ans[idx+2].isdecimal():
         
             st.write('Non numeric answer')
             st.write(qst[idx+2],ans[idx+2])
