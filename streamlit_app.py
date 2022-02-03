@@ -125,11 +125,6 @@ def main():
             
     submit_button2 = form2.form_submit_button("Submit")
     
-    if not os.path.exists(output_file):
-    
-        df_new = pd.DataFrame(columns=qst) 
-        df_new.to_csv(output_file)  
-        
     if submit_button2:
     
         check_flag = check_form(qst,ans,units)
@@ -140,12 +135,7 @@ def main():
         
             zip_iterator = zip(qst,ans)
             data = dict(zip_iterator)
-            
-        
-            df_old = pd.read_csv(output_file,header=0, index_col=[0])
-            df_new = df_old.append(data, ignore_index = True)
-            
-            open(output_file, 'w').write(df_new.to_csv())
+            df_new = pd.DataFrame([ans],columns=qst)
             
             pushToGithub(df_new)
         
