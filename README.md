@@ -4,8 +4,8 @@ GITHUB
 
 1) Fork the repository
 2) Upload the csv file with your questions
-3) Edit the file streamlit_app.py by changing the name of the csv file
-4) Click on the top-right, and from the menu click on "Settings"
+3) Edit the file streamlit_app.py by changing the name of the csv file and save the changes
+4) Click on the top-right (on your github user icon), and from the menu click on "Settings"
 5) At the bottom of the left panel, click on "Developer settings"
 6) On the left, click on "Personal access tokens"
 7) Click on "Generate new token"
