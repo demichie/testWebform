@@ -38,21 +38,21 @@ def check_form(qst,ans,units):
         idx = 2+i*3
     
         try:
-            float(ans[idx].get())
+            float(ans[idx])
         except ValueError:
             st.write('Non numeric answer')
             st.write(qst[idx],ans[idx])
             check_flag = False
             
         try:
-            float(ans[idx+1].get())
+            float(ans[idx+1])
         except ValueError:
             st.write('Non numeric answer')
             st.write(qst[idx+1],ans[idx+1])
             check_flag = False
             
         try:
-            float(ans[idx+2].get())
+            float(ans[idx+2])
         except ValueError:
             st.write('Non numeric answer')
             st.write(qst[idx+2],ans[idx+2])
