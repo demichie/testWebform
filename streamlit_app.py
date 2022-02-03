@@ -2,7 +2,29 @@ import pandas as pd
 import streamlit as st
 import os.path
 
+import base64
+from github import Github
+from github import InputGitTreeElement
+from datetime import datetime
 
+def pushToGithub(df_new):
+
+    df2 = df_new.to_csv(sep=',', index=False)
+
+    g = Github(github_token)
+    repo = g.get_user().get_repo('createWebform')
+
+    now = datetime.now()
+    dt_string = now.strftime("%Y_%m_%d_%H:%M:%S")
+
+    # Upload to github
+    git_prefix = 'DATA/'
+    git_file = git_prefix +dt_string+'_Output.csv'
+
+    repo.create_file(git_file, "committing files", df2, branch="main")
+    st.write(git_file + ' CREATED')
+    
+    return
 
 def check_form(qst,ans,units):
 
@@ -125,6 +147,8 @@ def main():
             df_new = df_old.append(data, ignore_index = True)
             
             open(output_file, 'w').write(df_new.to_csv())
+            
+            pushToGithub(df_new)
         
 if __name__ == '__main__':
-	main()            
+	main()  
