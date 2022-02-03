@@ -137,10 +137,7 @@ def main():
     
             st.write('Thank you '+ans[0]+' '+ans[1] )
         
-            zip_iterator = zip(qst,ans)
-            data = dict(zip_iterator)
-            df_new = pd.DataFrame([ans],columns=qst)
-            
+            df_new = pd.DataFrame([ans],columns=qst)            
             pushToGithub(df_new,csv_file)
         
 if __name__ == '__main__':
