@@ -12,7 +12,7 @@ def pushToGithub(df_new,csv_file):
 
     df2 = df_new.to_csv(sep=',', index=False)
 
-    g = Github(github_token)
+    g = Github(st.secrets["github_token"])
     repo = g.get_user().get_repo('createWebform')
 
     now = datetime.now()
