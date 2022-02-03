@@ -27,3 +27,8 @@ STREAMLIT
 8) Click on "Save"
 9) Click on "Deploy"
 
+
+You can share this link for the form:
+
+https://share.streamlit.io/YOUR_GITHUB_PAGE/createwebform/main
+
