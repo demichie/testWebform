@@ -6,11 +6,13 @@ from github import Github
 from github import InputGitTreeElement
 from datetime import datetime
 
-def pushToGithub(df_new):
+csv_file = 'SEED.csv'
+
+def pushToGithub(df_new,csv_file):
 
     df2 = df_new.to_csv(sep=',', index=False)
 
-    g = Github(st.secrets["github_token"])
+    g = Github(github_token)
     repo = g.get_user().get_repo('createWebform')
 
     now = datetime.now()
@@ -18,7 +20,7 @@ def pushToGithub(df_new):
 
     # Upload to github
     git_prefix = 'DATA/'
-    git_file = git_prefix +dt_string+'_Output.csv'
+    git_file = git_prefix +csv_file.replace('.csv','_')+dt_string+'_Output.csv'
 
     repo.create_file(git_file, "committing files", df2, branch="main")
     st.write(git_file + ' CREATED')
@@ -91,7 +93,6 @@ def main():
 
     st.title("Elicitation form")
 	
-    csv_file = 'test_input.csv'
     df = pd.read_csv(csv_file,header=0)
     
     output_file = csv_file.replace('.csv','_NEW.csv')
@@ -137,7 +138,7 @@ def main():
             data = dict(zip_iterator)
             df_new = pd.DataFrame([ans],columns=qst)
             
-            pushToGithub(df_new)
+            pushToGithub(df_new,csv_file)
         
 if __name__ == '__main__':
-	main()  
+	main()            
