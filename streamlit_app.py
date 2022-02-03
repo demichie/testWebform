@@ -7,6 +7,7 @@ from github import InputGitTreeElement
 from datetime import datetime
 
 csv_file = 'SEED.csv'
+pctls = [5,50,95]
 
 def pushToGithub(df_new,csv_file):
 
@@ -95,13 +96,6 @@ def check_form(qst,ans,units):
 def main():
 
     st.title("Elicitation form")
-	
-    df = pd.read_csv(csv_file,header=0)
-    
-    output_file = csv_file.replace('.csv','_NEW.csv')
-
-    pctls = [5,50,95]
-
     form2 = st.form(key='form2')
     
     qst = ["First Name"]
@@ -113,18 +107,18 @@ def main():
     ans.append(form2.text_input(qst[-1]))
     
     units = []
+
+    df = pd.read_csv(csv_file,header=0)
+
     for i in df.itertuples():
         idx,shortQ,longQ,unit,scale = i
         units.append(unit)
-        # print(idx,qst,unit,scale)
-        form2.header(shortQ)
+        
+	form2.header(shortQ)
         form2.markdown(longQ)
-        j=0
         for pct in pctls:
-            j+=1
             
             qst.append(shortQ+' - '+str(int(pct))+'% ['+unit+']')
-    
             ans.append(form2.text_input(qst[-1]))
             
     submit_button2 = form2.form_submit_button("Submit")
