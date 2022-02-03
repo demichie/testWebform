@@ -2,7 +2,6 @@ import pandas as pd
 import streamlit as st
 import os.path
 
-import base64
 from github import Github
 from github import InputGitTreeElement
 from datetime import datetime
