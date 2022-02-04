@@ -111,7 +111,7 @@ def main():
     df = pd.read_csv(csv_file,header=0)
 
     for i in df.itertuples():
-        idx,shortQ,longQ,unit,scale = i
+        idx,shortQ,longQ,unit,scale = i[0:5]
         units.append(unit)
         
         form2.header(shortQ)
