@@ -71,25 +71,23 @@ def check_form(qst,ans,units):
                 st.write('Error. '+qst[idx+1]+' >= '+qst[idx+2])            
                 check_flag = False
             
-            if units[i] == '%':
-            
-                if float(ans[idx])<= 0.0 or float(ans[idx])>= 100.0:
+            if float(ans[idx])<= minVals[i] or float(ans[idx])>= maxVals[i]:
                 
-                    st.write('Error. '+qst[idx])
-                    st.write('The answer must be a percentage value (0<x<100)')
-                    check_flag = False
+                st.write('Error. '+qst[idx]+':'+str(ans[idx]))
+                st.write('The answer must be a value between '+str(minVals[i])+' and '+str(maxVals[i]))
+                check_flag = False
             
-                if float(ans[idx+1])<= 0.0 or float(ans[idx+1])>= 100.0:
+            if float(ans[idx+1])<= minVals[i] or float(ans[idx+1])>= maxVals[i]:
                 
-                    st.write('Error. '+qst[idx+1])
-                    st.write('The answer must be a percentage value (0<x<100)')
-                    check_flag = False
+                st.write('Error. '+qst[idx+1]+':'+str(ans[idx+1]))
+                st.write('The answer must be a value between '+str(minVal)+' and '+str(maxVal))
+                check_flag = False
             
-                if float(ans[idx+2])<= 0.0 or float(ans[idx+2])>= 100.0:
+            if float(ans[idx+2])<= minVals[i] or float(ans[idx+2])>= maxVals[i]:
                 
-                    st.write('Error. '+qst[idx+2])
-                    st.write('The answer must be a percentage value (0<x<100)')
-                    check_flag = False
+                st.write('Error. '+qst[idx+2]+':'+str(ans[idx+2]))
+                st.write('The answer must be a value between '+str(minVals[i])+' and '+str(maxVals[i]) )
+                check_flag = False
 
     return check_flag       
 
@@ -107,12 +105,17 @@ def main():
     ans.append(form2.text_input(qst[-1]))
     
     units = []
-
+    minVals = []
+    maxVals = []
+    
     df = pd.read_csv(csv_file,header=0)
 
     for i in df.itertuples():
-        idx,shortQ,longQ,unit,scale = i[0:5]
+        idx,shortQ,longQ,unit,scale,minVal,maxVal = i[0:7]
+	
         units.append(unit)
+        minVals.append(minVal)
+        maxVals.append(maxVal)
         
         form2.header(shortQ)
         form2.markdown(longQ)
@@ -125,7 +128,7 @@ def main():
     
     if submit_button2:
     
-        check_flag = check_form(qst,ans,units)
+        check_flag = check_form(qst,ans,units,minVals,maxVals)
         
         if check_flag:
     
