@@ -11,6 +11,7 @@ GITHUB
 7) On the left, click on "Personal access tokens"
 8) Click on "Generate new token"
 9) Give a name and copy your token
+10) Select scope "Repo"
 
 
 STREAMLIT
