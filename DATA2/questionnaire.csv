@@ -5,7 +5,7 @@ Q3_s,"Percentage of VEI 4 eruptions for Cotopaxi",%,uni,0,100,88.24,seed
 Q4_s,"Mean surface of 10 cm isopach for Pichincha fallout",km2,log,0,inf,837,seed
 Q5_s,"Relative uncertainty for eruption duration estimation Layers 3-5",%,uni,0,100,27.51,seed
 Q6_s,"Total SO2 production Tungurahua 2006",ktons,log,0,inf,12,seed
-Q7_s,"Mean elongation direction of isopach deposits at Cotopaxi",deg,uni,0,inf,268,seed
+Q7_s,"Mean elongation direction of isopach deposits at Cotopaxi",degrees,uni,0,inf,268,seed
 Q8_s,"Percentage of andesitic eruptions at Cotopaxi",%,uni,0,100,40,seed
 Q9_s,"Average amount of ash in layer BF2 of 2450 BP eruption of Pululahua",wt%,uni,0,inf,58.19,seed
 Q10_s,"Total volume of lava flow at Reventador",m3,log,0,inf,36000000,seed
