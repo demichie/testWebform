@@ -9,7 +9,7 @@ from datetime import datetime
 input_dir = 'DATA' 
 csv_file = 'questionnaire.csv'
 # this can be 'seed' or 'target'
-quest_type = 'seed'
+quest_type = 'target'
 
 pctls = [5,50,95]
 
