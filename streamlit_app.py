@@ -123,7 +123,8 @@ def main():
     for i in df.itertuples():
     
         idx,shortQ,longQ,unit,scale,minVal,maxVal,realization,question = i[0:9]
-        print(idx,shortQ,longQ,unit,scale,minVal,maxVal,realization,question)
+        minVal = float(minVal)
+        maxVal = float(maxVal)
         
         if ( question == quest_type):
 
