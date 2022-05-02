@@ -122,7 +122,7 @@ def main():
     
     for i in df.itertuples():
     
-        idx,shortQ,longQ,unit,scale,minVal,maxVal,realization,question = i[0:9]
+        idx,shortQ,longQ,unit,scale,minVal,maxVal,realization,question,image = i[0:10]
         minVal = float(minVal)
         maxVal = float(maxVal)
         
@@ -143,6 +143,12 @@ def main():
             
             # print(idx,qst,unit,scale)
             form2.header(shortQ)
+            
+            if (not pd.isnull(image)):
+                imagefile = './'+input_dir+'/images/'+str(image)
+                if os.path.exists(imagefile):  
+                    form2.image('./'+input_dir+'/images/'+str(image))
+        
             form2.markdown(longQ)
         
             j=0
