@@ -6,7 +6,7 @@ from github import Github
 from github import InputGitTreeElement
 from datetime import datetime
 
-input_dir = 'DATA2' 
+input_dir = 'DATA' 
 csv_file = 'questionnaire.csv'
 # this can be 'seed' or 'target'
 quest_type = 'seed'
