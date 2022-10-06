@@ -131,8 +131,22 @@ def main():
     st.title("Elicitation form")
 	
     df = pd.read_csv('./'+input_dir+'/'+csv_file,header=0,index_col=0)
+        
+    try:
     
-    print(df)
+        from createWebformDict import idx_list
+        print('idx_list read',idx_list)
+    
+    except ImportError:
+    
+        print('ImportError')    
+        idx_list = list(df.index)
+            
+    if len(idx_list) == 0:
+    
+        idx_list = list(df.index)
+            
+    print('idx_list',idx_list)
         
     data_top = df.head()
     
