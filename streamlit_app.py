@@ -7,7 +7,7 @@ from github import InputGitTreeElement
 from datetime import datetime
 
 
-input_dir = 'DATA_TSUNAMI' 
+input_dir = 'DATA' 
 csv_file = 'questionnaire.csv'
 
 # this can be 'seed' or 'target'
