@@ -149,7 +149,7 @@ def main():
     st.title("Elicitation form")
     
     # check if the pdf supporting file is defined and if it exists
-    if companion_document in locals:
+    if companion_document in locals():
   
         pdf_doc = input_dir+'/'+ companion_document
         # Check whether the specified output path exists or not
