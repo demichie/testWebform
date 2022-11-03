@@ -17,8 +17,8 @@ def pushToGithub(df_new,input_dir,csv_file,quest_type):
 
     df2 = df_new.to_csv(sep=',', index=False)
 
-    # g = Github(st.secrets["github_token"])
-    g = Github(user,github_token)
+    g = Github(st.secrets["github_token"])
+    # g = Github(user,github_token)
     repo = g.get_user().get_repo('createWebform')
 
     now = datetime.now()
@@ -61,7 +61,7 @@ def saveAnswer(df_new,input_dir,csv_file,quest_type):
     
     return
 
-def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list):
+def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50s):
 
     n_qst = int((len(qst)-2)/3)
     
@@ -70,8 +70,10 @@ def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list):
     for i in range(n_qst):
     
         if idxs[i] in idx_list:
+        
+            print('idxMin,idxMax',idxMins[i],idxMaxs[i]) 
     
-            idx = 2+i*3
+            idx = 3+i*3
         
             try:
                 float(ans[idx])
@@ -123,13 +125,52 @@ def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list):
                     st.write('Error. '+qst[idx+2]+':'+str(ans[idx+2]))
                     st.write('The answer must be a value >'+str(minVals[i])+' and <'+str(maxVals[i]) )
                     check_flag = False
+                    
+                if (idxMins[i] < idxMaxs[i]):
+                
+                    sum50check = 0.0
+                    
+                    for ii in range(idxMins[i]-1,idxMaxs[i]):
+                    
+                        sum50check += float(ans[4+ii*3])
+                        
+                    if float(sum50s[i] != sum50check):  
+                      
+                        st.write('Error in sum of 50%iles for questions from ',str(idxMins[i]),' to ',str(idxMaxs[i]))
+                        st.write('The sum should be '+str(sum50s[i]))
+                        check_flag = False
+                    
+                    
 
     return check_flag       
 
 def main():
 
     st.title("Elicitation form")
-	
+    
+    # check if the pdf supporting file is defined and if it exists
+    if 'companion_document' in locals:
+  
+        pdf_doc = input_dir+'/'+ companion_document
+        # Check whether the specified output path exists or not
+        isExists = os.path.exists(pdf_doc)
+
+    else:
+    
+        isExists = False
+  
+    if isExists:  
+    
+        with open(pdf_doc, "rb") as pdf_file:
+        
+            PDFbyte = pdf_file.read()
+
+        st.download_button(label="Download PDF Questionnaire", 
+            data=PDFbyte,
+            file_name=companion_document,
+            mime='application/octet-stream')
+    
+    # read the questionnaire to a pandas dataframe	
     df = pd.read_csv('./'+input_dir+'/'+csv_file,header=0,index_col=0)
         
     try:
@@ -169,14 +210,14 @@ def main():
         lang_index = st.selectbox("Language", range(len(options)), format_func=lambda x: options[x])
         print('lang_index',lang_index)
         language = options[lang_index]
-        index_list = [0,1,lang_index+2]+list(range(len(langs)+2,len(langs)+9))
+        index_list = [0,1,lang_index+2]+list(range(len(langs)+2,len(langs)+12))
     
         
     else:
      
         lang_index = 0
         language = ''
-        index_list = list(range(0,10))
+        index_list = list(range(0,13))
         
     print('language',language)    
     
@@ -188,24 +229,31 @@ def main():
 
     form2 = st.form(key='form2')
     
-    qst = ["First Name"]
     ans = []
-    
+
+    qst = ["First Name"]    
     ans.append(form2.text_input(qst[-1]))
     
     qst.append("Last Name")
     ans.append(form2.text_input(qst[-1]))
     
+    qst.append("Email address")
+    ans.append(form2.text_input(qst[-1]))
+
         
     idxs = []
     units = []
     minVals = []
     maxVals = []
     
+    idxMins = []
+    idxMaxs = []
+    sum50s = []
+        
     for i in df.itertuples():
     
-        idx,shortQ,longQ,unit,scale,minVal,maxVal,realization,question,image = [i[j] for j in index_list]
-        print(idx,question,question == quest_type)
+        idx,shortQ,longQ,unit,scale,minVal,maxVal,realization,question,idxMin,idxMax,sum50,image = [i[j] for j in index_list]
+        # print(idx,question,question == quest_type)
         minVal = float(minVal)
         maxVal = float(maxVal)
         
@@ -225,26 +273,46 @@ def main():
             minVals.append(minVal)
             maxVals.append(maxVal)
             
-            print('idx',idx,idx in idx_list)
+            sum50 = float(sum50)     
+                
+            idxMins.append(idxMin)
+            idxMaxs.append(idxMax)
+            sum50s.append(sum50)
+            
+            # print('idx',idx,idx in idx_list)
             
             if (idx in idx_list):
             
                 form2.markdown("""___""")
                 # print(idx,qst,unit,scale)
-                form2.header('Q'+str(idx)+'. '+shortQ)
+                if quest_type == 'target':
+                
+                    form2.header('TQ'+str(idx)+'. '+shortQ)
+                    
+                else:
+
+                    form2.header('SQ'+str(idx)+'. '+shortQ)
             
                 if (not pd.isnull(image)):
                     imagefile = './'+input_dir+'/images/'+str(image)
                     if os.path.exists(imagefile):  
                         form2.image('./'+input_dir+'/images/'+str(image))
+                        
+                if idxMin<idxMax:
+                
+                    longQ_NB = "**N.B.** *The sum of 50%iles for questions "+str(idxMin)+"-"+str(idxMax)+" have to sum to "+str(sum50)+".*"        
+                    form2.markdown(longQ)
+                    form2.markdown(longQ_NB)
+                
+                else:    
         
-                form2.markdown(longQ)
+                    form2.markdown(longQ)
         
             j=0
             for pct in pctls:
                 j+=1
             
-                qst.append(shortQ+' - '+str(int(pct))+'% ('+str(minVal)+';'+str(maxVal)+')'+' ['+unit+']')
+                qst.append(shortQ+' - '+str(int(pct))+'%ile ('+str(minVal)+';'+str(maxVal)+')'+' ['+unit+']')
     
                 if (idx in idx_list):
                 
@@ -276,7 +344,7 @@ def main():
     
     if submit_button2:
     
-        check_flag = check_form(qst,idxs,ans,units,minVals,maxVals,idx_list)
+        check_flag = check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50s)
         
         if check_flag:
     

@@ -1,5 +1,6 @@
 input_dir = 'DATA' 
 csv_file = 'questionnaire.csv'
+# companion_document = 'doc.pdf'
 
 # this can be 'seed' or 'target'
 quest_type = 'target'
