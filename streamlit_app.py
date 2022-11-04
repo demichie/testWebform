@@ -147,15 +147,18 @@ def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50
 def main():
 
     st.title("Elicitation form")
-    
+       
     # check if the pdf supporting file is defined and if it exists
-    if 'companion_document' in locals():
-  
-        pdf_doc = input_dir+'/'+ companion_document
+    try:
+    
+        from createWebformDict import companion_document
+        
+        pdf_doc = './'+input_dir+'/'+ companion_document
         # Check whether the specified output path exists or not
         isExists = os.path.exists(pdf_doc)
 
-    else:
+    except ImportError:
+    
     
         isExists = False
   
@@ -172,16 +175,32 @@ def main():
     
     # read the questionnaire to a pandas dataframe	
     df = pd.read_csv('./'+input_dir+'/'+csv_file,header=0,index_col=0)
+ 
+    if quest_type == 'seed':
         
-    try:
+        try:
     
-        from createWebformDict import idx_list
-        print('idx_list read',idx_list)
+            from createWebformDict import seed_list
+            print('seed_list read',seed_list)
+            idx_list = seed_list
     
-    except ImportError:
+        except ImportError:
     
-        print('ImportError')    
-        idx_list = list(df.index)
+            print('ImportError')    
+            idx_list = list(df.index)
+            
+    if quest_type == 'target':
+        
+        try:
+    
+            from createWebformDict import target_list
+            print('seed_list read',target_list)
+            idx_list = target_list
+    
+        except ImportError:
+    
+            print('ImportError')    
+            idx_list = list(df.index)            
             
     if len(idx_list) == 0:
     
