@@ -147,16 +147,18 @@ def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50
 def main():
 
     st.title("Elicitation form")
-    
+       
     # check if the pdf supporting file is defined and if it exists
-    if 'companion_document' in locals():
-  
-        pdf_doc = input_dir+'/'+ companion_document
+    try:
+    
+        from createWebformDict import companion_document
+        
+        pdf_doc = './'+input_dir+'/'+ companion_document
         # Check whether the specified output path exists or not
         isExists = os.path.exists(pdf_doc)
 
-    else:
-    
+    except ImportError:
+        
         isExists = False
   
     if isExists:  
@@ -169,19 +171,65 @@ def main():
             data=PDFbyte,
             file_name=companion_document,
             mime='application/octet-stream')
+
+    # check if supplemetry docs are defined and if the files exists
+    try:
+    
+        from createWebformDict import supplementary_documents
+        
+        isExists = True
+
+    except ImportError:
+        
+        isExists = False
+  
+    if isExists:  
+    
+        for doc in supplementary_documents:
+        
+            pdf_doc = './'+input_dir+'/'+ doc
+            
+            isExists = os.path.exists(pdf_doc)
+    
+            if isExists:
+    
+                with open(pdf_doc, "rb") as pdf_file:
+        
+                    PDFbyte = pdf_file.read()
+
+                st.download_button(label="Download "+doc, 
+                    data=PDFbyte,
+                    file_name=doc,
+                    mime='application/octet-stream')
     
     # read the questionnaire to a pandas dataframe	
     df = pd.read_csv('./'+input_dir+'/'+csv_file,header=0,index_col=0)
+ 
+    if quest_type == 'seed':
         
-    try:
+        try:
     
-        from createWebformDict import idx_list
-        print('idx_list read',idx_list)
+            from createWebformDict import seed_list
+            print('seed_list read',seed_list)
+            idx_list = seed_list
     
-    except ImportError:
+        except ImportError:
     
-        print('ImportError')    
-        idx_list = list(df.index)
+            print('ImportError')    
+            idx_list = list(df.index)
+            
+    if quest_type == 'target':
+        
+        try:
+    
+            from createWebformDict import target_list
+            print('seed_list read',target_list)
+            idx_list = target_list
+    
+        except ImportError:
+    
+            print('ImportError')    
+            idx_list = list(df.index)            
             
     if len(idx_list) == 0:
     
@@ -321,7 +369,18 @@ def main():
                 else:
                 
                     ans.append('')
-            
+
+   
+    form2.markdown("""___""")
+                    
+    agree_text = "By sending this form and clicking the option “I AGREE”, you hereby consent to the processing of your given personal data (first name, last name and email address) voluntarily provided. These data are used for the only purpose of associating the asnwers of the seed question to those of the target questions, and to communicate with the participant only for matters related to the expert elicitation. In accordance with the EU GDPR, your personal data will be stored on a privite Github repository (https://github.com/security) for as long as is necessary for the purposes for which the personal data are processed." 
+    
+    agree = form2.checkbox('I AGREE')
+    
+    form2.write(agree_text)
+
+    form2.markdown("""___""")
+                
     submit_button2 = form2.form_submit_button("Submit")
     
     
@@ -346,7 +405,12 @@ def main():
     
         check_flag = check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50s)
         
-        if check_flag:
+        if not agree:
+        
+            st.write('Please agree to the terms above')
+                        
+        
+        if check_flag and agree:
     
             st.write('Thank you '+ans[0]+' '+ans[1] )
         
@@ -361,6 +425,8 @@ def main():
             else:
             
                 saveAnswer(df_new,input_dir,csv_file,quest_type)
+                
+                
         
 if __name__ == '__main__':
 	main()            
