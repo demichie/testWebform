@@ -6,19 +6,82 @@ from github import Github
 from github import InputGitTreeElement
 from datetime import datetime
 
+import cryptography
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
+
+import secrets
+import base64
+import getpass
+
 from createWebformDict import *
 
+def generate_salt(size=16):
+    """Generate the salt used for key derivation, 
+    `size` is the length of the salt to generate"""
+    return secrets.token_bytes(size)
+    
+def derive_key(salt, password):
+    """Derive the key from the `password` using the passed `salt`"""
+    kdf = Scrypt(salt=salt, length=32, n=2**14, r=8, p=1)
+    return kdf.derive(password.encode())
+    
+def load_salt():
+    # load salt from salt.salt file
+    return open("salt.salt", "rb").read()
+    
+def generate_key(password, salt_size=16, load_existing_salt=False, save_salt=True):
+    """
+    Generates a key from a `password` and the salt.
+    If `load_existing_salt` is True, it'll load the salt from a file
+    in the current directory called "salt.salt".
+    If `save_salt` is True, then it will generate a new salt
+    and save it to "salt.salt"
+    """
+    if load_existing_salt:
+        # load existing salt
+        salt = load_salt()
+    elif save_salt:
+        # generate new salt and save it
+        salt = generate_salt(salt_size)
+        with open("salt.salt", "wb") as salt_file:
+            salt_file.write(salt)
+    # generate the key from the salt and the password
+    derived_key = derive_key(salt, password)
+    # encode it using Base 64 and return it
+    return base64.urlsafe_b64encode(derived_key)            
+
+def encrypt(filename, key):
+    """
+    Given a filename (str) and key (bytes), it encrypts the file and write it
+    """
+    f = Fernet(key)
+    with open(filename, "rb") as file:
+        # read all file data
+        file_data = file.read()
+    # encrypt data
+    encrypted_data = f.encrypt(file_data)
+    # write the encrypted file
+    with open(filename, "wb") as file:
+        file.write(encrypted_data)
 
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')
 
-def pushToGithub(df_new,input_dir,csv_file,quest_type):
+def pushToGithub(df_new,input_dir,csv_file,quest_type,datarepo):
 
     df2 = df_new.to_csv(sep=',', index=False)
 
-    g = Github(st.secrets["github_token"])
-    # g = Github(user,github_token)
+    if datarepo == 'github':
+
+        g = Github(st.secrets["github_token"])
+    
+    elif datarepo == 'local_github':
+    
+        g = Github(user,github_token)
+    
+    
     repo = g.get_user().get_repo('createWebform')
 
     now = datetime.now()
@@ -74,6 +137,11 @@ def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50
             print('idxMin,idxMax',idxMins[i],idxMaxs[i]) 
     
             idx = 3+i*3
+        
+            if ',' in ans[idx]
+                st.write('Please remove comma')
+                st.write(qst[idx],ans[idx])
+                check_flag = False
         
             try:
                 float(ans[idx])
@@ -147,6 +215,33 @@ def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50
 def main():
 
     st.title("Elicitation form")
+    
+    try: 
+    
+        from createWebformDict import datarepo
+        
+    except ImportError:
+    
+        datarepo = 'local'  
+        
+    print('Data repository:',datarepo)  
+
+    try:
+    
+        from createWebformDict import encrypted
+                
+    except ImportError:
+    
+        encrypted = False
+        
+    print('Encrypting of data:',encrypted)    
+        
+    if encrypted:
+    
+        if ( datarepo == 'local' ) or ( datarepo == 'local_github' ):
+        
+            password = getpass.getpass("Enter the password for encryption: ")
+            key = generate_key(password, load_existing_salt=False)
        
     # check if the pdf supporting file is defined and if it exists
     try:
@@ -380,10 +475,7 @@ def main():
     form2.write(agree_text)
 
     form2.markdown("""___""")
-                
-    submit_button2 = form2.form_submit_button("Submit")
-    
-    
+
     zip_iterator = zip(qst,ans)
     data = dict(zip_iterator)
     df_download = pd.DataFrame([ans],columns=qst)
@@ -394,13 +486,16 @@ def main():
 
     file_download = 'myans_'+dt_string+'.csv'
 
-    st.download_button(
+    dwnl = st.download_button(
         label="Download answers as CSV",
         data=csv,
         file_name=file_download,
         mime='text/csv',
     )
+                
+    submit_button2 = form2.form_submit_button("Submit")
     
+        
     if submit_button2:
     
         check_flag = check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50s)
@@ -409,18 +504,24 @@ def main():
         
             st.write('Please agree to the terms above')
                         
-        
+       
         if check_flag and agree:
     
             st.write('Thank you '+ans[0]+' '+ans[1] )
+            st.write('Please download a copy of your answers and keep the file.')
         
             zip_iterator = zip(qst,ans)
             data = dict(zip_iterator)
             df_new = pd.DataFrame([ans],columns=qst)
             
+            if encrypted:
+            
+                f = Fernet(key)
+                df_new = f.encrypt(df_new)
+                        
             if datarepo == 'github':
 
-                pushToGithub(df_new,input_dir,csv_file,quest_type)
+                pushToGithub(df_new,input_dir,csv_file,quest_type,datarepo)
                 
             else:
             
