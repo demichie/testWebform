@@ -69,7 +69,7 @@ def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')
 
-def pushToGithub(df_new,input_dir,csv_file,quest_type,datarepo):
+def pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo):
 
     df2 = df_new.to_csv(sep=',', index=False)
 
@@ -82,7 +82,7 @@ def pushToGithub(df_new,input_dir,csv_file,quest_type,datarepo):
         g = Github(user,github_token)
     
     
-    repo = g.get_user().get_repo('createWebform')
+    repo = g.get_user().get_repo(Repository)
 
     now = datetime.now()
     dt_string = now.strftime("%Y_%m_%d_%H:%M:%S")
@@ -138,7 +138,7 @@ def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50
     
             idx = 3+i*3
         
-            if ',' in ans[idx]
+            if ( ',' in ans[idx] ):
                 st.write('Please remove comma')
                 st.write(qst[idx],ans[idx])
                 check_flag = False
@@ -225,6 +225,17 @@ def main():
         datarepo = 'local'  
         
     print('Data repository:',datarepo)  
+    
+    if ( datarepo == 'github' ) or ( datarepo == 'local_github' ):
+    
+        try: 
+    
+            from createWebformDict import Repository
+            
+        
+        except ImportError:
+    
+            print('Please add Repository')        
 
     try:
     
@@ -521,7 +532,7 @@ def main():
                         
             if datarepo == 'github':
 
-                pushToGithub(df_new,input_dir,csv_file,quest_type,datarepo)
+                pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo)
                 
             else:
             
