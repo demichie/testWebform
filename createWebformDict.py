@@ -18,8 +18,8 @@ datarepo = 'github'
 # github_token = "token"
 
 pctls = [5, 50, 95]
-companion_document = ""
-supplementary_documents = [""]
+# companion_document = ""
+# supplementary_documents = [""]
 
 confirmation_email = True
 
