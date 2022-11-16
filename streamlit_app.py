@@ -16,6 +16,36 @@ import getpass
 
 from createWebformDict import *
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.header import Header
+from email.mime.application import MIMEApplication
+
+def send_email(sender, password, receiver, smtp_server, smtp_port, email_message, subject, attachment=None):
+
+    message = MIMEMultipart()
+    message['To'] = Header(receiver)
+    message['From']  = Header(sender)
+    message['Subject'] = Header(subject)
+    message.attach(MIMEText(email_message,'plain', 'utf-8'))
+    
+    if attachment:
+    
+        att = MIMEApplication(attachment.read(), _subtype="txt")
+        att.add_header('Content-Disposition', 'attachment', filename=attachment.name)
+        message.attach(att)
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        print('server',server)
+        server.starttls()
+        server.ehlo()
+        server.login(sender, password)
+        text = message.as_string()
+        server.sendmail(sender, receiver, text)
+        server.quit()
+
+    return
+
 def generate_salt(size=16):
     """Generate the salt used for key derivation, 
     `size` is the length of the salt to generate"""
@@ -70,9 +100,7 @@ def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 def pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo):
-
-    df2 = df_new.to_csv(sep=',', index=False)
-
+    
     if datarepo == 'github':
 
         g = Github(st.secrets["github_token"])
@@ -85,17 +113,25 @@ def pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo):
     repo = g.get_user().get_repo(Repository)
 
     now = datetime.now()
-    dt_string = now.strftime("%Y_%m_%d_%H:%M:%S")
+    dt_string = now.strftime("%Y_%m_%d_%H_%M_%S")
 
     # Upload to github
     git_prefix = input_dir+'/'+ quest_type+'/'
     
     git_file = git_prefix +csv_file.replace('.csv','_')+dt_string+'_Output.csv'
+    df2 = df_new.to_csv(sep=',', index=False)
 
-    repo.create_file(git_file, "committing files", df2, branch="main")
-    st.write(git_file + ' CREATED')
+    try:
+
+        repo.create_file(git_file, "committing files", df2, branch="main")
+        st.write(git_file + ' CREATED')
+        print(git_file + ' CREATED')
+        
+    except:
     
-    return
+        print('Problem committing file')    
+   
+    return git_file
 
 def saveAnswer(df_new,input_dir,csv_file,quest_type):
 
@@ -110,9 +146,9 @@ def saveAnswer(df_new,input_dir,csv_file,quest_type):
         print('The new directory ' + output_dir + ' is created!')
     
     now = datetime.now()
-    dt_string = now.strftime("%Y_%m_%d_%H:%M:%S")
+    dt_string = now.strftime("%Y_%m_%d_%H_%M_%S")
 
-    # Upload to github
+    # Local save
     save_prefix = output_dir + '/'
     
     save_file = save_prefix +csv_file.replace('.csv','_')+dt_string+'_Output.csv'
@@ -122,9 +158,11 @@ def saveAnswer(df_new,input_dir,csv_file,quest_type):
 
     st.write(save_file + ' SAVED')
     
-    return
+    return save_file
 
 def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50s):
+
+    print(ans[0:3])
 
     n_qst = int((len(qst)-2)/3)
     
@@ -133,9 +171,7 @@ def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50
     for i in range(n_qst):
     
         if idxs[i] in idx_list:
-        
-            print('idxMin,idxMax',idxMins[i],idxMaxs[i]) 
-    
+                    
             idx = 3+i*3
         
             if ( ',' in ans[idx] ):
@@ -185,7 +221,7 @@ def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50
                 if float(ans[idx+1])<= minVals[i] or float(ans[idx+1])>= maxVals[i]:
                 
                     st.write('Error. '+qst[idx+1]+':'+str(ans[idx+1]))
-                    st.write('The answer must be a value  >'+str(minVal)+' and <'+str(maxVal))
+                    st.write('The answer must be a value  >'+str(minVals[i])+' and <'+str(maxVals[i]))
                     check_flag = False
             
                 if float(ans[idx+2])<= minVals[i] or float(ans[idx+2])>= maxVals[i]:
@@ -213,6 +249,14 @@ def check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50
     return check_flag       
 
 def main():
+
+    hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
     st.title("Elicitation form")
     
@@ -340,9 +384,7 @@ def main():
     if len(idx_list) == 0:
     
         idx_list = list(df.index)
-            
-    print('idx_list',idx_list)
-        
+                
     data_top = df.head()
     
     langs = []
@@ -365,17 +407,15 @@ def main():
         print('lang_index',lang_index)
         language = options[lang_index]
         index_list = [0,1,lang_index+2]+list(range(len(langs)+2,len(langs)+12))
-    
+        print('language',language) 
         
     else:
      
         lang_index = 0
         language = ''
         index_list = list(range(0,13))
-        
-    print('language',language)    
-    
-    print('index_list',index_list)    
+               
+    # print('index_list',index_list)    
     
     output_file = csv_file.replace('.csv','_NEW.csv')
 
@@ -511,11 +551,12 @@ def main():
     
         check_flag = check_form(qst,idxs,ans,units,minVals,maxVals,idx_list,idxMins,idxMaxs,sum50s)
         
+        print('check_flag',check_flag)
+        
         if not agree:
         
             st.write('Please agree to the terms above')
-                        
-       
+                               
         if check_flag and agree:
     
             st.write('Thank you '+ans[0]+' '+ans[1] )
@@ -531,12 +572,35 @@ def main():
                 df_new = f.encrypt(df_new)
                         
             if datarepo == 'github':
-
-                pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo)
+            
+                print('Before pushing file to Gihub')
+                save_file = pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo)
+                print('After pushing file to Gihub')
                 
             else:
             
-                saveAnswer(df_new,input_dir,csv_file,quest_type)
+                print('Before saving file')
+                save_file = saveAnswer(df_new,input_dir,csv_file,quest_type)
+                print('After saving file')
+            
+            if confirmation_email:
+                                
+                email = ans[2]
+                message = 'Dear xxx,\nThank you for filling in the questionaire.\nYou can find your answers attached to the email.\nKind regards,\n'+SENDER_NAME
+                subject = 'Elicitation confirmation'
+            
+            
+                with open(save_file, "rb") as attachment:
+                
+                    try:
+
+                        send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attachment=attachment) 
+                        
+                    except:
+                    
+                        st.write('Problem sending the confirmation email')
+                        print('Problem sending the confirmation email')    
+    
                 
                 
         
