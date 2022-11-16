@@ -131,7 +131,7 @@ def pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo):
     
         print('Problem committing file')    
    
-    return df2
+    return git_file
 
 def saveAnswer(df_new,input_dir,csv_file,quest_type):
 
