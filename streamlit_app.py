@@ -22,6 +22,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.application import MIMEApplication
+from io import StringIO
 
 def send_email(sender, password, receiver, smtp_server, smtp_port, email_message, subject, attach_data,attach_name):
 
