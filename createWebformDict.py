@@ -10,9 +10,9 @@ seed_list = [1,2]
 absolute_indexing = True
 
 # select 'github' or 'local'
-datarepo = 'local'
-Repository = 'createWebform'
-encrypted = False
+datarepo = 'github'
+# Repository = 'createWebform'
+# encrypted = False
 
 # user = 'username'
 # github_token = "token"
@@ -20,4 +20,8 @@ encrypted = False
 pctls = [5, 50, 95]
 companion_document = ""
 supplementary_documents = [""]
+
+confirmation_email = True
+
+
 
