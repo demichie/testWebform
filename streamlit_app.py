@@ -643,6 +643,15 @@ def main():
                     SENDER_NAME = st.secrets["SENDER_NAME"]
                     SMTP_SERVER_ADDRESS = st.secrets["SMTP_SERVER_ADDRESS"]
                     PORT = st.secrets["PORT"]
+                    
+                else:
+                
+                    from createWebformDict import SENDER_ADDRESS    
+                    from createWebformDict import SENDER_PASSWORD    
+                    from createWebformDict import SENDER_NAME    
+                    from createWebformDict import SMTP_SERVER_ADDRESS
+                    from createWebformDict import PORT    
+    
 
                 email = ans[2]
                 message = 'Dear ' + ans[0] + ' ' + ans[
