@@ -38,7 +38,7 @@ def send_email(sender, password, receiver, smtp_server, smtp_port, email_message
     f.seek(0)
 
     
-    if attachment:
+    if attach_data:
     
         msg = MIMEBase('application', "octet-stream")
         msg.set_payload(f.read())
