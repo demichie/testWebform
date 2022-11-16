@@ -582,12 +582,12 @@ def main():
 
     file_download = 'myans_' + dt_string + '.csv'
 
-    dwnl = st.download_button(
-        label="Download answers as CSV",
-        data=csv,
-        file_name=file_download,
-        mime='text/csv',
-    )
+    # dwnl = st.download_button(
+    #    label="Download answers as CSV",
+    #    data=csv,
+    #    file_name=file_download,
+    #    mime='text/csv',
+    # )
 
     submit_button2 = form2.form_submit_button("Submit")
 
@@ -606,7 +606,11 @@ def main():
 
             st.write('Thank you ' + ans[0] + ' ' + ans[1])
             st.write(
-                'Please download a copy of your answers and keep the file.')
+                'Please check your email to see if you received a confirmation message.'
+            )
+            st.write(
+                "If you haven't received it, please wait a few minutes and submit your answers again."
+            )
 
             zip_iterator = zip(qst, ans)
             data = dict(zip_iterator)
@@ -642,7 +646,7 @@ def main():
 
                 email = ans[2]
                 message = 'Dear ' + ans[0] + ' ' + ans[
-                    1] + ',\nThank you for filling in the questionaire.\n' + 'You can find your answers attached to the email.\nKind regards,\n' + SENDER_NAME
+                    1] + ',\nThank you for filling in the questionnaire.\n' + 'You can find your answers attached to the email.\nKind regards,\n' + SENDER_NAME
                 subject = 'Elicitation confirmation'
 
                 try:
