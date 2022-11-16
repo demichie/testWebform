@@ -617,7 +617,7 @@ def main():
                 subject = 'Elicitation confirmation'
             
             
-                send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attach_data=df_new.to_string(),attach_name=save_file)                       
+                send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attach_data=df_new.to_csv(sep=',', index=False), attach_name=save_file)                       
                    
                 
                 
