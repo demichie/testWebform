@@ -126,11 +126,13 @@ def pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo):
         repo.create_file(git_file, "committing files", df2, branch="main")
         st.write(git_file + ' CREATED')
         print(git_file + ' CREATED')
-        file_content = repository.get_contents(git_file)
         
     except:
     
         print('Problem committing file')    
+   
+    file_content = repository.get_contents(git_file)
+        
    
     return file_content
 
