@@ -575,7 +575,6 @@ def main():
             
                 print('Before pushing file to Gihub')
                 save_file = pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo)
-                save_file = './'+save_file
                 print('After pushing file to Gihub')
                 
             else:
