@@ -584,6 +584,14 @@ def main():
                 print('After saving file')
             
             if confirmation_email:
+            
+                if datarepo == 'github':
+                
+                    SENDER_ADDRESS = st.secrets["SENDER_ADDRESS"]
+                    SENDER_PASSWORD = st.secrets["SENDER_PASSWORD"]
+                    SENDER_NAME = st.secrets["SENDER_NAME"]
+                    SMTP_SERVER_ADDRESS = st.secrets["SMTP_SERVER_ADDRESS"]
+                    PORT = st.secrets["PORT"]
                                 
                 email = ans[2]
                 message = 'Dear xxx,\nThank you for filling in the questionaire.\nYou can find your answers attached to the email.\nKind regards,\n'+SENDER_NAME
