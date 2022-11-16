@@ -17,24 +17,39 @@ import getpass
 from createWebformDict import *
 
 import smtplib
+from email import encoders
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.application import MIMEApplication
 
-def send_email(sender, password, receiver, smtp_server, smtp_port, email_message, subject, attachment=None):
+def send_email(sender, password, receiver, smtp_server, smtp_port, email_message, subject, attach_data,attach_name):
 
     message = MIMEMultipart()
     message['To'] = Header(receiver)
     message['From']  = Header(sender)
     message['Subject'] = Header(subject)
-    message.attach(MIMEText(email_message,'plain', 'utf-8'))
+    
+    # Add the attachment to the message
+    f = StringIO()
+    # write some content to 'f'
+    f.write("content for 'test.txt'")
+    f.seek(0)
+
     
     if attachment:
     
-        att = MIMEApplication(attachment.read(), _subtype="txt")
-        att.add_header('Content-Disposition', 'attachment', filename=attachment.name)
-        message.attach(att)
+        msg = MIMEBase('application', "octet-stream")
+        msg.set_payload(f.read())
+        encoders.encode_base64(msg)
+        msg.add_header('Content-Disposition',
+                   'attachment',
+                   filename=attach_name)
+        message.attach(msg)
+    
+        # att = MIMEApplication(attach_data, _subtype="txt")
+        # att.add_header('Content-Disposition', 'attachment', filename=attachment.name)
+        # message.attach(att)
         server = smtplib.SMTP(smtp_server, smtp_port)
         print('server',server)
         server.starttls()
@@ -126,8 +141,7 @@ def pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo):
         repo.create_file(git_file, "committing files", df2, branch="main")
         st.write(git_file + ' CREATED')
         print(git_file + ' CREATED')
-        file_content = repo.get_contents(git_file)
-    
+        
         
     except:
     
@@ -135,7 +149,7 @@ def pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo):
    
         
    
-    return file_content
+    return git_file
 
 def saveAnswer(df_new,input_dir,csv_file,quest_type):
 
@@ -602,7 +616,7 @@ def main():
                 subject = 'Elicitation confirmation'
             
             
-                send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attachment=save_file)                       
+                send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attach_data=df_new,attach_name=save_file)                       
                    
                 
                 
