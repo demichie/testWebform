@@ -126,12 +126,13 @@ def pushToGithub(Repository,df_new,input_dir,csv_file,quest_type,datarepo):
         repo.create_file(git_file, "committing files", df2, branch="main")
         st.write(git_file + ' CREATED')
         print(git_file + ' CREATED')
+        file_content = repository.get_contents(git_file)
         
     except:
     
         print('Problem committing file')    
    
-    return git_file
+    return file_content
 
 def saveAnswer(df_new,input_dir,csv_file,quest_type):
 
@@ -598,17 +599,8 @@ def main():
                 subject = 'Elicitation confirmation'
             
             
-                with open(save_file, "rb") as attachment:
-                
-                    try:
-
-                        send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attachment=attachment) 
-                        
-                    except:
-                    
-                        st.write('Problem sending the confirmation email')
-                        print('Problem sending the confirmation email')    
-    
+                send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attachment=save_file)                       
+                   
                 
                 
         
