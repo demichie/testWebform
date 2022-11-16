@@ -36,7 +36,7 @@ def send_email(sender, password, receiver, smtp_server, smtp_port, email_message
     # Add the attachment to the message
     f = StringIO()
     # write some content to 'f'
-    f.write("content for 'test.txt'")
+    f.write(attach_data)
     f.seek(0)
 
     
