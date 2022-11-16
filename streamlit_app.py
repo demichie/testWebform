@@ -641,7 +641,8 @@ def main():
                     PORT = st.secrets["PORT"]
 
                 email = ans[2]
-                message = 'Dear xxx,\nThank you for filling in the questionaire.\nYou can find your answers attached to the email.\nKind regards,\n' + SENDER_NAME
+                message = 'Dear ' + ans[0] + ' ' + ans[
+                    1] + ',\nThank you for filling in the questionaire.\n' + 'You can find your answers attached to the email.\nKind regards,\n' + SENDER_NAME
                 subject = 'Elicitation confirmation'
 
                 try:
