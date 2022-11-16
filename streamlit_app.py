@@ -38,27 +38,25 @@ def send_email(sender, password, receiver, smtp_server, smtp_port, email_message
     f.seek(0)
 
     
-    if attach_data:
-    
-        msg = MIMEBase('application', "octet-stream")
-        msg.set_payload(f.read())
-        encoders.encode_base64(msg)
-        msg.add_header('Content-Disposition',
+    msg = MIMEBase('application', "octet-stream")
+    msg.set_payload(f.read())
+    encoders.encode_base64(msg)
+    msg.add_header('Content-Disposition',
                    'attachment',
                    filename=attach_name)
-        message.attach(msg)
+    message.attach(msg)
     
         # att = MIMEApplication(attach_data, _subtype="txt")
         # att.add_header('Content-Disposition', 'attachment', filename=attachment.name)
         # message.attach(att)
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        print('server',server)
-        server.starttls()
-        server.ehlo()
-        server.login(sender, password)
-        text = message.as_string()
-        server.sendmail(sender, receiver, text)
-        server.quit()
+    server = smtplib.SMTP(smtp_server, smtp_port)
+    print('server',server)
+    server.starttls()
+    server.ehlo()
+    server.login(sender, password)
+    text = message.as_string()
+    server.sendmail(sender, receiver, text)
+    server.quit()
 
     return
 
