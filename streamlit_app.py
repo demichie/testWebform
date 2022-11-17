@@ -592,6 +592,8 @@ def main():
     submit_button2 = form2.form_submit_button("Submit")
 
     if submit_button2:
+    
+        print('checkin for problems in answers')
 
         check_flag = check_form(qst, idxs, ans, units, minVals, maxVals,
                                 idx_list, idxMins, idxMaxs, sum50s)
@@ -633,6 +635,9 @@ def main():
                 print('Before saving file')
                 save_file = saveAnswer(df_new, input_dir, csv_file, quest_type)
                 print('After saving file')
+
+
+            from createWebformDict import confirmation_email
 
             if confirmation_email:
 
