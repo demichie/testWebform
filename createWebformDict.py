@@ -5,13 +5,20 @@ csv_file = 'questionnaire.csv'
 # this can be 'seed' or 'target'
 quest_type = 'target'
 
+group_list = ['Group A','Group B','Group C']
+
 target_list = [2,3]
 seed_list = [1,2]
 absolute_indexing = True
 
 # select 'github' or 'local'
-datarepo = 'github'
-Repository = 'createWebform'
+
+datarepo = 'local'
+
+# datarepo = 'github'
+# Repository = 'createWebform'
+# RepositoryData = 'createWebform'
+
 # encrypted = False
 
 # user = 'username'
@@ -21,7 +28,7 @@ pctls = [5, 50, 95]
 # companion_document = ""
 # supplementary_documents = [""]
 
-confirmation_email = True
+confirmation_email = False
 
 
 

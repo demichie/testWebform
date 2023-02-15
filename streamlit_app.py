@@ -125,7 +125,7 @@ def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 
-def pushToGithub(Repository, df_new, input_dir, csv_file, quest_type,
+def pushToGithub(RepositoryData, df_new, input_dir, csv_file, quest_type,
                  datarepo):
 
     if datarepo == 'github':
@@ -136,7 +136,7 @@ def pushToGithub(Repository, df_new, input_dir, csv_file, quest_type,
 
         g = Github(user, github_token)
 
-    repo = g.get_user().get_repo(Repository)
+    repo = g.get_user().get_repo(RepositoryData)
 
     now = datetime.now()
     dt_string = now.strftime("%Y_%m_%d_%H_%M_%S")
@@ -457,7 +457,7 @@ def main():
         print('lang_index', lang_index)
         language = options[lang_index]
         index_list = [0, 1, lang_index+2] + \
-            list(range(len(langs)+2, len(langs)+12))
+            list(range(len(langs)+2, len(langs)+13))
         print('language', language)
 
     else:
@@ -467,6 +467,25 @@ def main():
         index_list = list(range(0, 14))
 
     # print('index_list',index_list)
+
+    try:
+
+        from createWebformDict import group_list
+        print('group_list read', group_list)
+        
+        group = st.multiselect('Select your group',group_list,[])
+        indices = [str(i+1) for i, w in enumerate(group_list) if w in group] 
+        group = ';'.join(indices)
+        
+        print('Group',group,indices)
+        
+                
+    except ImportError:
+
+        print('ImportError group_list')
+        group = '0'
+
+
 
     output_file = csv_file.replace('.csv', '_NEW.csv')
 
@@ -485,6 +504,8 @@ def main():
     qst.append("Email address")
     ans.append(form2.text_input(qst[-1]))
 
+    
+
     idxs = []
     units = []
     minVals = []
@@ -497,6 +518,8 @@ def main():
     questions = []
 
     for i in df.itertuples():
+    
+        print(  [ i[j] for j in index_list ] ) 
 
         idx, shortQ, longQ, unit, scale, minVal, maxVal, realization, question, idxMin, idxMax, sum50, parent, image = [
             i[j] for j in index_list
@@ -552,7 +575,7 @@ def main():
 
                     longQ_NB = "**N.B.** *The sum of 50%iles for questions " + \
                         str(idxMin)+"-"+str(idxMax) + \
-                        " have to sum to "+str(sum50)+".*"
+                        " have to sum to "+str(sum50)+unit+".*"
                     form2.markdown(longQ)
                     form2.markdown(longQ_NB)
 
@@ -631,6 +654,7 @@ def main():
             zip_iterator = zip(qst, ans)
             data = dict(zip_iterator)
             df_new = pd.DataFrame([ans], columns=qst)
+            df_new.insert(loc=3, column='Group', value=group)
 
             if encrypted:
 
@@ -640,7 +664,7 @@ def main():
             if datarepo == 'github':
 
                 print('Before pushing file to Gihub')
-                save_file = pushToGithub(Repository, df_new, input_dir,
+                save_file = pushToGithub(RepositoryData, df_new, input_dir,
                                          csv_file, quest_type, datarepo)
                 print('After pushing file to Gihub')
 
