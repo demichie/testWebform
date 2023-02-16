@@ -3,12 +3,12 @@ csv_file = 'questionnaire.csv'
 # companion_document = 'doc.pdf'
 
 # this can be 'seed' or 'target'
-quest_type = 'target'
+quest_type = 'seed'
 
 group_list = ['Group A','Group B','Group C']
 
-target_list = [2,3]
-seed_list = [1,2]
+# target_list = [2,3]
+# seed_list = [1,2]
 absolute_indexing = True
 
 # select 'github' or 'local'
