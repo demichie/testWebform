@@ -13,11 +13,11 @@ absolute_indexing = True
 
 # select 'github' or 'local'
 
-datarepo = 'local'
+# datarepo = 'local'
 
-# datarepo = 'github'
-# Repository = 'createWebform'
-# RepositoryData = 'createWebform'
+datarepo = 'github'
+Repository = 'testWebform'
+RepositoryData = 'testWebform'
 
 # encrypted = False
 
